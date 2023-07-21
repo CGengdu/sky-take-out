@@ -14,11 +14,11 @@ spring:
       password: ${sky.datasource.password}
 
 mybatis:
-  #mapperé…ç½®æ–‡ä»¶
+  #mapperÅäÖÃÎÄ¼ş
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.sky.entity
   configuration:
-    #å¼€å¯é©¼å³°å‘½å
+    #¿ªÆôÍÕ·åÃüÃû
     map-underscore-to-camel-case: true
 
 logging:
@@ -31,9 +31,9 @@ logging:
 
 sky:
   jwt:
-    # è®¾ç½®jwtç­¾ååŠ å¯†æ—¶ä½¿ç”¨çš„ç§˜é’¥
+    # ÉèÖÃjwtÇ©Ãû¼ÓÃÜÊ±Ê¹ÓÃµÄÃØÔ¿
     admin-secret-key: itcast
-    # è®¾ç½®jwtè¿‡æœŸæ—¶é—´
+    # ÉèÖÃjwt¹ıÆÚÊ±¼ä
     admin-ttl: 7200000
-    # è®¾ç½®å‰ç«¯ä¼ é€’è¿‡æ¥çš„ä»¤ç‰Œåç§°
+    # ÉèÖÃÇ°¶Ë´«µİ¹ıÀ´µÄÁîÅÆÃû³Æ
     admin-token-name: token
