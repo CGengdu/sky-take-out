@@ -23,7 +23,6 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-
     /**
      * 新增分类
      * @param categoryDTO
@@ -31,7 +30,7 @@ public class CategoryController {
      */
     @PostMapping
     @ApiOperation("新增分类")
-    public Result<String> insert(CategoryDTO categoryDTO) {
+    public Result<String> insert(@RequestBody CategoryDTO categoryDTO) {
         log.info("新增分类：{}", categoryDTO);
         categoryService.insert(categoryDTO);
         return Result.success();

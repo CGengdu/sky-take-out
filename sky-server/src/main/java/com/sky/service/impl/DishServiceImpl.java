@@ -34,8 +34,10 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private SetmealDishMapper setmealDishMapper;
-     /**
+
+    /**
      * 新增菜品和对应的口味
+     *
      * @param dishDTO
      */
     @Override
@@ -59,6 +61,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 菜品分页查询
+     *
      * @param dishPageQueryDTO
      * @return
      */
@@ -71,6 +74,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 菜品批量删除
+     *
      * @param ids
      */
     @Override
@@ -84,7 +88,7 @@ public class DishServiceImpl implements DishService {
             Dish dish = dishMapper.getById(id);
             // 判断当前要删除的菜品状态是否为起售中
             if (dish.getStatus() == StatusConstant.ENABLE) {
-                 // 如果是起售中，抛出业务异常
+                // 如果是起售中，抛出业务异常
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
 
@@ -114,12 +118,13 @@ public class DishServiceImpl implements DishService {
         // 将查询到的数据封装到VO
         DishVO dishVO = new DishVO();
         BeanUtils.copyProperties(dish, dishVO);
-        dishVO.setFlavors(dishFlavors) ;
+        dishVO.setFlavors(dishFlavors);
         return dishVO;
     }
 
     /**
      * 修改菜品和关联的口味
+     *
      * @param dishDTO
      */
     @Override
@@ -142,5 +147,17 @@ public class DishServiceImpl implements DishService {
             //向口味表插入n条数据
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
+
+    /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<Dish> list(Long categoryId) {
+        Dish dish = Dish.builder().categoryId(categoryId).status(StatusConstant.ENABLE).build();
+        return dishMapper.list(dish);
     }
 }
