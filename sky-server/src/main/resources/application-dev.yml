@@ -11,3 +11,8 @@ sky:
     access-key-id: LTAI4G3LLbbYsb7zWcTYjV7g
     access-key-secret: hmVFl3CiyKqamzRCWqLN2lfyGGEVyg
     bucket-name: gengduc-springboot-oss
+  redis:
+    host: 101.42.157.148
+    port: 6379
+    database: 0
+    password:
