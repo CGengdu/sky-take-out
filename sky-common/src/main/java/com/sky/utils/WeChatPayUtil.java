@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.X509Certificate;
@@ -188,7 +189,7 @@ public class WeChatPayUtil {
             byte[] message = signMessage.getBytes();
 
             Signature signature = Signature.getInstance("SHA256withRSA");
-            signature.initSign(PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath()))));
+            signature.initSign(PemUtil.loadPrivateKey(Files.newInputStream(new File(weChatProperties.getPrivateKeyFilePath()).toPath())));
             signature.update(message);
             String packageSign = Base64.getEncoder().encodeToString(signature.sign());
 
