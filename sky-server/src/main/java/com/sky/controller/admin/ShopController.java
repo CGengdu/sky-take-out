@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/shop")
 @Api(tags = "店铺相关接口")
 @Slf4j
-public class ShopController {
+public class ShopController{
     public static final String KEY = "SHOP_STATUS";
 
     @Autowired
@@ -20,6 +20,7 @@ public class ShopController {
 
     /**
      * 设置店铺的营业状态
+     *
      * @param status
      * @return
      */
@@ -33,6 +34,7 @@ public class ShopController {
 
     /**
      * 获取店铺的营业状态
+     *
      * @return
      */
     @GetMapping("/status")
