@@ -56,9 +56,9 @@ sky:
     notifyUrl: ${sky.wechat.notifyUrl}
     refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
   shop:
-    address: ±±¾©ÊÐº£µíÇøÉÏµØÊ®½Ö10ºÅ
+    address: åŒ—äº¬å¸‚æµ·æ·€åŒºå²šå±±æ‚¦åºœ
   baidu:
-    ak:
+    ak: C0dAuWm9hXeUxGUQjWyOSnLz8dPkNEiY
 
 
 
