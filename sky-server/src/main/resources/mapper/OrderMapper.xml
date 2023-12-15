@@ -86,7 +86,7 @@
             </if>
         </where>
     </select>
-    
+
     <select id="getOrderCount" resultType="java.lang.Integer">
         select count(id) from orders
         <where>
@@ -114,5 +114,20 @@
         </if>
         group by name order by number desc
         limit 0, 10
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from orders
+        <where>
+            <if test="begin != null">
+                and order_time &gt; #{begin}
+            </if>
+            <if test="end != null">
+                and order_time &lt; #{end}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
     </select>
 </mapper>

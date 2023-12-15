@@ -5,14 +5,23 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.service.WorkspaceService;
+import com.sky.vo.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,6 +37,9 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private WorkspaceService workspaceService;
 
     /**
      * 统计指定时间区间内的营业额数据
@@ -196,13 +208,76 @@ public class ReportServiceImpl implements ReportService {
         // limit 0,10
 
         List<GoodsSalesDTO> goodsSalesDTOList = orderMapper.getSalesTop10(beginTime, endTime);
-        String nameList = StringUtils.join(goodsSalesDTOList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList()),",");
-        String numberList = StringUtils.join(goodsSalesDTOList.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList()),",");
+        String nameList = StringUtils.join(goodsSalesDTOList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList()), ",");
+        String numberList = StringUtils.join(goodsSalesDTOList.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList()), ",");
 
         return SalesTop10ReportVO
                 .builder()
                 .nameList(nameList)
                 .numberList(numberList)
                 .build();
+    }
+
+    /**
+     * 导出运营数据报表
+     *
+     * @param httpServletResponse
+     */
+    @Override
+    public void exportBusinessData(HttpServletResponse httpServletResponse) {
+        LocalDate dataBegin = LocalDate.now().minusDays(30);
+        LocalDate dateEnd = LocalDate.now().minusDays(1);
+        LocalDateTime dateTimeBegin = LocalDateTime.of(dataBegin, LocalTime.MIN);
+        LocalDateTime dateTimeEnd = LocalDateTime.of(dateEnd, LocalTime.MAX);
+        BusinessDataVO businessDataVO = workspaceService.getBusinessData(dateTimeBegin, dateTimeEnd);
+
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+
+
+        try {
+            if (inputStream != null) {
+                XSSFWorkbook excel = new XSSFWorkbook(inputStream); // 读取运营数据报表模板
+                XSSFSheet sheet = excel.getSheet("Sheet1");
+
+                // 概览数据
+                XSSFCell cell = sheet.getRow(1).getCell(1);
+                cell.setCellValue("时间：" + dataBegin + " 至 " + dateEnd);
+                CellStyle cellStyle = excel.createCellStyle();
+                cellStyle.setAlignment(HorizontalAlignment.CENTER); //水平居中
+                cellStyle.setVerticalAlignment(VerticalAlignment.CENTER); // 垂直居中
+                cell.setCellStyle(cellStyle);
+
+                sheet.getRow(3).getCell(2).setCellValue(businessDataVO.getTurnover());
+                sheet.getRow(3).getCell(4).setCellValue(businessDataVO.getOrderCompletionRate());
+                sheet.getRow(3).getCell(6).setCellValue(businessDataVO.getNewUsers());
+
+                sheet.getRow(4).getCell(2).setCellValue(businessDataVO.getValidOrderCount());
+                sheet.getRow(4).getCell(4).setCellValue(businessDataVO.getUnitPrice());
+
+                // 明细数据
+                for (int i = 0; i < 30; i++) {
+                    LocalDate date = dataBegin.plusDays(i);
+                    BusinessDataVO businessData = workspaceService.getBusinessData(LocalDateTime.of(date, LocalTime.MIN), LocalDateTime.of(date, LocalTime.MAX));
+
+                    XSSFRow row = sheet.getRow(7 + i);
+                    row.getCell(1).setCellValue(date.toString());
+                    row.getCell(2).setCellValue(businessData.getTurnover());
+                    row.getCell(3).setCellValue(businessData.getValidOrderCount());
+                    row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
+                    row.getCell(5).setCellValue(businessData.getUnitPrice());
+                    row.getCell(6).setCellValue(businessData.getNewUsers());
+                }
+
+                ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+                excel.write(outputStream);
+
+                outputStream.close();
+                excel.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

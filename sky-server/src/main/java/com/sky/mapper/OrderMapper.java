@@ -62,6 +62,7 @@ public interface OrderMapper {
 
     /**
      * 根据订单状态喝下单时间查询订单
+     *
      * @param status
      * @param orderTime
      * @return
@@ -71,6 +72,7 @@ public interface OrderMapper {
 
     /**
      * 根据动态条件查村营业额
+     *
      * @param map
      * @return
      */
@@ -78,6 +80,7 @@ public interface OrderMapper {
 
     /**
      * 根据动态条件查询
+     *
      * @param map
      * @return
      */
@@ -85,9 +88,18 @@ public interface OrderMapper {
 
     /**
      * 统计指定时间内销量排名前10
+     *
      * @param begin
      * @param end
      * @return
      */
     List<GoodsSalesDTO> getSalesTop10(LocalDateTime begin, LocalDateTime end);
+
+    /**
+     * 根据动态条件统计订单数量
+     *
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
